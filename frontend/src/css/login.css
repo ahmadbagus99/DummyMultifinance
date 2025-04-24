@@ -1,0 +1,18 @@
+.login-container {
+    background-color: #1a2035;
+}
+
+.login-form input {
+    background-color: transparent !important;
+    color: white !important;
+    border-color: white !important;
+}
+
+.login-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.login-image {
+    object-fit: cover;
+    height: 100vh;
+}
