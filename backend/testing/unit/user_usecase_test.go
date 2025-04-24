@@ -25,6 +25,11 @@ func (m *MockUserRepo) GetUserByUsername(username string) (*models.User, error) 
 	return args.Get(0).(*models.User), args.Error(1)
 }
 
+func (m *MockUserRepo) GetByID(id int) (*models.User, error) {
+	args := m.Called(id)
+	return args.Get(0).(*models.User), args.Error(1)
+}
+
 func TestCreateUser_Success(t *testing.T) {
 	mockRepo := new(MockUserRepo)
 	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
