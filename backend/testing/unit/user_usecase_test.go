@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"DummyMultifinance/domain"
+	"DummyMultifinance/domain/models"
 	"DummyMultifinance/usecases"
 	"errors"
 	"testing"
@@ -15,20 +15,20 @@ type MockUserRepo struct {
 	mock.Mock
 }
 
-func (m *MockUserRepo) CreateUser(user *domain.User) (*domain.User, error) {
+func (m *MockUserRepo) CreateUser(user *models.User) (*models.User, error) {
 	args := m.Called(user)
-	return args.Get(0).(*domain.User), args.Error(1)
+	return args.Get(0).(*models.User), args.Error(1)
 }
 
-func (m *MockUserRepo) GetUserByUsername(username string) (*domain.User, error) {
+func (m *MockUserRepo) GetUserByUsername(username string) (*models.User, error) {
 	args := m.Called(username)
-	return args.Get(0).(*domain.User), args.Error(1)
+	return args.Get(0).(*models.User), args.Error(1)
 }
 
 func TestCreateUser_Success(t *testing.T) {
 	mockRepo := new(MockUserRepo)
 	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
-	mockRepo.On("CreateUser", mock.Anything).Return(&domain.User{Username: "testuser", Password: "hashedPassword"}, nil)
+	mockRepo.On("CreateUser", mock.Anything).Return(&models.User{Username: "testuser", Password: "hashedPassword"}, nil)
 
 	user, err := userUseCase.CreateUser("testuser", "password")
 
@@ -59,7 +59,7 @@ func TestLogin_Success(t *testing.T) {
 	mockRepo := new(MockUserRepo)
 	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
 
-	mockRepo.On("GetUserByUsername", "testuser").Return(&domain.User{Username: "testuser", Password: string(hashedPassword)}, nil)
+	mockRepo.On("GetUserByUsername", "testuser").Return(&models.User{Username: "testuser", Password: string(hashedPassword)}, nil)
 	token, expiration, err := userUseCase.Login("testuser", validPassword)
 
 	assert.NoError(t, err)

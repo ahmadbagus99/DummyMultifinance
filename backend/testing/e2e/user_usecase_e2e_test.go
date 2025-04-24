@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"DummyMultifinance/domain"
+	"DummyMultifinance/domain/models"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -19,7 +19,7 @@ func TestE2E_UserFlow(t *testing.T) {
 	}
 
 	// Simulating a new user registration
-	newUser := &domain.User{Username: "testuser", Password: "password"}
+	newUser := &models.User{Username: "testuser", Password: "password"}
 	url := os.Getenv("APP_HOST") + ":" + os.Getenv("APP_PORT") + "/register"
 
 	reqBody, _ := json.Marshal(newUser)

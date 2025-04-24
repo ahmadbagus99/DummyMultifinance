@@ -1,7 +1,8 @@
 package usecases
 
 import (
-	"DummyMultifinance/domain"
+	"DummyMultifinance/domain/models"
+	"DummyMultifinance/domain/repositories"
 	"fmt"
 	"os"
 	"time"
@@ -18,16 +19,16 @@ type Claims struct {
 }
 
 type UserUseCase struct {
-	UserRepo domain.UserRepository
+	UserRepo repositories.UserRepository
 }
 
-func (uc *UserUseCase) CreateUser(username, password string) (*domain.User, error) {
+func (uc *UserUseCase) CreateUser(username, password string) (*models.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
-	user := &domain.User{
+	user := &models.User{
 		Username: username,
 		Password: string(hashedPassword),
 	}
