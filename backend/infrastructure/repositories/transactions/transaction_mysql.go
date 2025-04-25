@@ -1,4 +1,4 @@
-package mysql
+package infrastructure
 
 import (
 	"DummyMultifinance/domain/models"

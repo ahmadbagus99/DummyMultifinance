@@ -1,9 +1,12 @@
 package repositories
 
-import "DummyMultifinance/domain/models"
+import (
+	"DummyMultifinance/domain/models"
+	"context"
+)
 
 type UserRepository interface {
-	GetByID(id int) (*models.Users, error)
-	CreateUser(user *models.Users) (*models.Users, error)
-	GetUserByUsername(username string) (*models.Users, error)
+	Insert(ctx context.Context, tx *models.Users) (*models.Users, error)
+	GetUserByID(ctx context.Context, id int) (*models.Users, error)
+	GetUserByUsername(ctx context.Context, username string) (*models.Users, error)
 }

@@ -9,12 +9,13 @@ import (
 func NewRouter(useCases *usecases.UseCases) *http.ServeMux {
 	router := http.NewServeMux()
 
-	transactionHandler := handler.NewTransactionHandler(useCases.TransactionUseCase)
+	userHandler := handler.NewUserHandler(useCases.UserUseCase)
 	consumerHandler := handler.NewConsumerHandler(useCases.ConsumerUseCase)
+	transactionHandler := handler.NewTransactionHandler(useCases.TransactionUseCase)
 
-	// Menambahkan routing
-	// router.HandleFunc("/register", userHandler.RegisterUser)
-	// router.HandleFunc("/login", userHandler.Login)
+	router.HandleFunc("/register", userHandler.CreateUser)
+	router.HandleFunc("/login", userHandler.Login)
+
 	router.HandleFunc("/insert-transactions", transactionHandler.CreateTransaction)
 	router.HandleFunc("/get-transaction", transactionHandler.GetTransaction)
 
