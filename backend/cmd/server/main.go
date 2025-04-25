@@ -3,7 +3,7 @@ package main
 import (
 	"DummyMultifinance/infrastructure"
 	"DummyMultifinance/infrastructure/config"
-	"DummyMultifinance/interfaces"
+	interfaces "DummyMultifinance/interfaces/handlers"
 	"DummyMultifinance/usecases"
 	"fmt"
 	"net/http"

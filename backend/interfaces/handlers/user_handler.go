@@ -10,6 +10,12 @@ type UserHandler struct {
 	UserUseCase *usecases.UserUseCase
 }
 
+func NewUserHandler(uc *usecases.UserUseCase) *UserHandler {
+	return &UserHandler{
+		UserUseCase: uc,
+	}
+}
+
 func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Username string `json:"username"`

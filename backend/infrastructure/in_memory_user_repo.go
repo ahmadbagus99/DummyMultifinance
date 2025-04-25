@@ -33,3 +33,12 @@ func (repo *InMemoryUserRepo) GetUserByUsername(username string) (*models.User, 
 	}
 	return nil, fmt.Errorf("user not found")
 }
+
+func (repo *InMemoryUserRepo) GetByID(id int) (*models.User, error) {
+	for _, user := range repo.users {
+		if user.ID == id {
+			return user, nil
+		}
+	}
+	return nil, fmt.Errorf("user not found")
+}
