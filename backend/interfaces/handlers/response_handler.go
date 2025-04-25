@@ -18,6 +18,7 @@ var (
 	Timeout     = "20"
 	ServerError = "21"
 	SystemError = "22"
+	BadRequest  = "23"
 )
 
 type Response struct {

@@ -1,8 +1,9 @@
 package testing
 
 import (
-	"DummyMultifinance/usecases"
 	"testing"
+
+	userUseCase "DummyMultifinance/usecases/user"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -10,7 +11,7 @@ import (
 
 type UserUseCaseIntegrationTestSuite struct {
 	suite.Suite
-	userUseCase *usecases.UserUseCase
+	userUseCase *userUseCase.UserUseCase
 }
 
 // func (suite *UserUseCaseIntegrationTestSuite) SetupSuite() {

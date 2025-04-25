@@ -1,20 +1,30 @@
 package interfaces
 
 import (
-	interfaces "DummyMultifinance/interfaces/handlers"
+	handler "DummyMultifinance/interfaces/handlers"
 	"DummyMultifinance/usecases"
 	"net/http"
 )
 
-func NewRouter(userUseCase *usecases.UserUseCase) *http.ServeMux {
+// // Struct UseCases untuk menyatukan use case terkait
+// type UseCases struct {
+// 	// UserUseCase        *usecases.UserUseCase
+// 	TransactionUseCase usecases.TransactionUseCase // Pastikan penamaan sesuai field
+// }
+
+// NewRouter hanya mengatur routing
+func NewRouter(useCases *usecases.UseCases) *http.ServeMux {
 	router := http.NewServeMux()
 
-	// Menyiapkan handler dengan use case yang telah diinject
-	userHandler := interfaces.NewUserHandler(userUseCase)
+	// Menyiapkan handler dengan use case yang telah di-inject
+	// userHandler := handler.NewUserHandler(useCases.UserUseCase)                      // hanya UserUseCase
+	transactionHandler := handler.NewTransactionHandler(useCases.TransactionUseCase) // Pastikan nama field benar
 
 	// Menambahkan routing
-	router.HandleFunc("/register", userHandler.RegisterUser)
-	router.HandleFunc("/login", userHandler.Login)
+	// router.HandleFunc("/register", userHandler.RegisterUser)
+	// router.HandleFunc("/login", userHandler.Login)
+	router.HandleFunc("/insert-transactions", transactionHandler.CreateTransaction) // untuk transaksi
+	router.HandleFunc("/get-transaction", transactionHandler.GetTransaction)        // untuk transaksi
 
 	return router
 }

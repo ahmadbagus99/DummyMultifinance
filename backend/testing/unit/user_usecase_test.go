@@ -2,9 +2,10 @@ package testing
 
 import (
 	"DummyMultifinance/domain/models"
-	"DummyMultifinance/usecases"
 	"errors"
 	"testing"
+
+	userUseCase "DummyMultifinance/usecases/user"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -32,7 +33,7 @@ func (m *MockUserRepo) GetByID(id int) (*models.User, error) {
 
 func TestCreateUser_Success(t *testing.T) {
 	mockRepo := new(MockUserRepo)
-	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
+	userUseCase := &userUseCase.UserUseCase{UserRepo: mockRepo}
 	mockRepo.On("CreateUser", mock.Anything).Return(&models.User{Username: "testuser", Password: "hashedPassword"}, nil)
 
 	user, err := userUseCase.CreateUser("testuser", "password")
@@ -44,7 +45,7 @@ func TestCreateUser_Success(t *testing.T) {
 
 func TestCreateUser_Failure(t *testing.T) {
 	mockRepo := new(MockUserRepo)
-	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
+	userUseCase := &userUseCase.UserUseCase{UserRepo: mockRepo}
 
 	mockRepo.On("CreateUser", mock.Anything).Return(nil, errors.New("error creating user"))
 	user, err := userUseCase.CreateUser("testuser", "password")
@@ -62,7 +63,7 @@ func TestLogin_Success(t *testing.T) {
 	}
 
 	mockRepo := new(MockUserRepo)
-	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
+	userUseCase := &userUseCase.UserUseCase{UserRepo: mockRepo}
 
 	mockRepo.On("GetUserByUsername", "testuser").Return(&models.User{Username: "testuser", Password: string(hashedPassword)}, nil)
 	token, expiration, err := userUseCase.Login("testuser", validPassword)
@@ -76,7 +77,7 @@ func TestLogin_Success(t *testing.T) {
 
 func TestLogin_UserNotFound(t *testing.T) {
 	mockRepo := new(MockUserRepo)
-	userUseCase := &usecases.UserUseCase{UserRepo: mockRepo}
+	userUseCase := &userUseCase.UserUseCase{UserRepo: mockRepo}
 
 	mockRepo.On("GetUserByUsername", "testuser").Return(nil, errors.New("user not found"))
 	token, expiration, err := userUseCase.Login("testuser", "password")

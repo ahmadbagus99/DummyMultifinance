@@ -1,16 +1,16 @@
 package interfaces
 
 import (
-	"DummyMultifinance/usecases"
+	userUseCase "DummyMultifinance/usecases/user"
 	"encoding/json"
 	"net/http"
 )
 
 type UserHandler struct {
-	UserUseCase *usecases.UserUseCase
+	UserUseCase *userUseCase.UserUseCase
 }
 
-func NewUserHandler(uc *usecases.UserUseCase) *UserHandler {
+func NewUserHandler(uc *userUseCase.UserUseCase) *UserHandler {
 	return &UserHandler{
 		UserUseCase: uc,
 	}
