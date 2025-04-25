@@ -3,7 +3,7 @@ package testing
 import (
 	"testing"
 
-	userUseCase "DummyMultifinance/usecases/user"
+	userUseCase "DummyMultifinance/usecases/users"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -23,9 +23,9 @@ type UserUseCaseIntegrationTestSuite struct {
 // }
 
 func (suite *UserUseCaseIntegrationTestSuite) TestCreateUser() {
-	user, err := suite.userUseCase.CreateUser("testuser", "password")
+	Users, err := suite.userUseCase.CreateUser("testuser", "password")
 	assert.NoError(suite.T(), err)
-	assert.Equal(suite.T(), "testuser", user.Username)
+	assert.Equal(suite.T(), "testuser", Users.Username)
 }
 
 func (suite *UserUseCaseIntegrationTestSuite) TestLogin() {

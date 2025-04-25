@@ -2,10 +2,12 @@ package main
 
 import (
 	"DummyMultifinance/infrastructure/config" // Pastikan ini mengarah ke router yang benar
-	infrastructure "DummyMultifinance/infrastructure/repositories/transaction"
+	infrastructureConsumer "DummyMultifinance/infrastructure/repositories/consumers"
+	infrastructureTransaction "DummyMultifinance/infrastructure/repositories/transactions"
 	routes "DummyMultifinance/interfaces/routes"
 	"DummyMultifinance/usecases"
-	transactionUseCase "DummyMultifinance/usecases/transaction"
+	consumerUseCase "DummyMultifinance/usecases/consumers"
+	transactionUseCase "DummyMultifinance/usecases/transactions"
 	"fmt"
 	"net/http"
 )
@@ -14,12 +16,16 @@ func main() {
 	config.LoadEnv()
 	db := config.NewDB()
 
-	txRepo := infrastructure.NewMysqlTransactionRepo(db)
-	txUseCase := transactionUseCase.NewTransactionUsecase(txRepo)
+	transactionsRepo := infrastructureTransaction.NewMysqlTransactionRepo(db)
+	consumersRepo := infrastructureConsumer.NewMysqlConsumerRepo(db)
+
+	transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionsRepo)
+	consumerUseCase := consumerUseCase.NewConsumerUsecase(consumersRepo)
 
 	useCases := &usecases.UseCases{
 		// UserUseCase:        userUseCase,
-		TransactionUseCase: txUseCase,
+		TransactionUseCase: transactionUseCase,
+		ConsumerUseCase:    consumerUseCase,
 	}
 
 	router := routes.NewRouter(useCases)

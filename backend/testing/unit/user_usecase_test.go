@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	userUseCase "DummyMultifinance/usecases/user"
+	userUseCase "DummyMultifinance/usecases/users"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -16,25 +16,25 @@ type MockUserRepo struct {
 	mock.Mock
 }
 
-func (m *MockUserRepo) CreateUser(user *models.User) (*models.User, error) {
+func (m *MockUserRepo) CreateUser(user *models.Users) (*models.Users, error) {
 	args := m.Called(user)
-	return args.Get(0).(*models.User), args.Error(1)
+	return args.Get(0).(*models.Users), args.Error(1)
 }
 
-func (m *MockUserRepo) GetUserByUsername(username string) (*models.User, error) {
+func (m *MockUserRepo) GetUserByUsername(username string) (*models.Users, error) {
 	args := m.Called(username)
-	return args.Get(0).(*models.User), args.Error(1)
+	return args.Get(0).(*models.Users), args.Error(1)
 }
 
-func (m *MockUserRepo) GetByID(id int) (*models.User, error) {
+func (m *MockUserRepo) GetByID(id int) (*models.Users, error) {
 	args := m.Called(id)
-	return args.Get(0).(*models.User), args.Error(1)
+	return args.Get(0).(*models.Users), args.Error(1)
 }
 
 func TestCreateUser_Success(t *testing.T) {
 	mockRepo := new(MockUserRepo)
 	userUseCase := &userUseCase.UserUseCase{UserRepo: mockRepo}
-	mockRepo.On("CreateUser", mock.Anything).Return(&models.User{Username: "testuser", Password: "hashedPassword"}, nil)
+	mockRepo.On("CreateUser", mock.Anything).Return(&models.Users{Username: "testuser", Password: "hashedPassword"}, nil)
 
 	user, err := userUseCase.CreateUser("testuser", "password")
 
@@ -65,7 +65,7 @@ func TestLogin_Success(t *testing.T) {
 	mockRepo := new(MockUserRepo)
 	userUseCase := &userUseCase.UserUseCase{UserRepo: mockRepo}
 
-	mockRepo.On("GetUserByUsername", "testuser").Return(&models.User{Username: "testuser", Password: string(hashedPassword)}, nil)
+	mockRepo.On("GetUserByUsername", "testuser").Return(&models.Users{Username: "testuser", Password: string(hashedPassword)}, nil)
 	token, expiration, err := userUseCase.Login("testuser", validPassword)
 
 	assert.NoError(t, err)

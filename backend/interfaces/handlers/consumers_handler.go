@@ -2,36 +2,36 @@ package interfaces
 
 import (
 	"DummyMultifinance/domain/models"
-	transactionUseCase "DummyMultifinance/usecases/transaction"
+	consumerUseCase "DummyMultifinance/usecases/consumers"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 )
 
-type TransactionHandler struct {
-	TransactionUseCase transactionUseCase.TransactionUseCase
+type ConsumerHandler struct {
+	ConsumerUseCase consumerUseCase.ConsumerUseCase
 }
 
-func NewTransactionHandler(uc transactionUseCase.TransactionUseCase) *TransactionHandler {
-	return &TransactionHandler{
-		TransactionUseCase: uc,
+func NewConsumerHandler(uc consumerUseCase.ConsumerUseCase) *ConsumerHandler {
+	return &ConsumerHandler{
+		ConsumerUseCase: uc,
 	}
 }
 
-func (h *TransactionHandler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+func (h *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		GeneralResponse(w, http.StatusMethodNotAllowed, "BadRequest", "Invalid method", nil)
 		return
 	}
 
-	var tx models.Transaction
+	var tx models.Consumers
 	if err := json.NewDecoder(r.Body).Decode(&tx); err != nil {
 		GeneralResponse(w, http.StatusBadRequest, BadRequest, err.Error(), nil)
 		return
 	}
 
-	createdTx, err := h.TransactionUseCase.CreateTransaction(r.Context(), &tx)
+	createdTx, err := h.ConsumerUseCase.CreateConsumer(r.Context(), &tx)
 	if err != nil {
 		GeneralResponse(w, http.StatusInternalServerError, "ServerError", err.Error(), nil)
 		return
@@ -40,13 +40,12 @@ func (h *TransactionHandler) CreateTransaction(w http.ResponseWriter, r *http.Re
 	GeneralResponse(w, http.StatusOK, "Success", Success, createdTx)
 }
 
-func (h *TransactionHandler) GetTransaction(w http.ResponseWriter, r *http.Request) {
+func (h *ConsumerHandler) GetConsumer(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		GeneralResponse(w, http.StatusMethodNotAllowed, "BadRequest", "Invalid method", nil)
 		return
 	}
 
-	// Ambil ID transaksi dari query parameter
 	idParam := r.URL.Query().Get("id")
 	if idParam == "" {
 		GeneralResponse(w, http.StatusBadRequest, "BadRequest", "Missing transaction ID", nil)
@@ -61,7 +60,7 @@ func (h *TransactionHandler) GetTransaction(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Panggil usecase untuk mendapatkan transaksi berdasarkan ID
-	tx, err := h.TransactionUseCase.GetTransactionById(r.Context(), id)
+	tx, err := h.ConsumerUseCase.GetConsumerById(r.Context(), id)
 	if err != nil {
 		GeneralResponse(w, http.StatusInternalServerError, "ServerError", err.Error(), nil)
 		return

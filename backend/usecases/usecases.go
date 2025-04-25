@@ -1,18 +1,21 @@
 package usecases
 
 import (
-	TransactionUseCase "DummyMultifinance/usecases/transaction"
-	userUseCase "DummyMultifinance/usecases/user"
+	consumerUseCase "DummyMultifinance/usecases/consumers"
+	transactionUseCase "DummyMultifinance/usecases/transactions"
+	userUseCase "DummyMultifinance/usecases/users"
 )
 
 type UseCases struct {
 	UserUseCase        userUseCase.UserUseCase
-	TransactionUseCase TransactionUseCase.TransactionUseCase
+	TransactionUseCase transactionUseCase.TransactionUseCase
+	ConsumerUseCase    consumerUseCase.ConsumerUseCase
 }
 
-func NewUseCases(userUC userUseCase.UserUseCase, txUC TransactionUseCase.TransactionUseCase) *UseCases {
+func NewUseCases(userUC userUseCase.UserUseCase, transactionUC transactionUseCase.TransactionUseCase, consumerUC consumerUseCase.ConsumerUseCase) *UseCases {
 	return &UseCases{
 		// UserUseCase:        userUC,
-		TransactionUseCase: txUC,
+		TransactionUseCase: transactionUC,
+		ConsumerUseCase:    consumerUC,
 	}
 }

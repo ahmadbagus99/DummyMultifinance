@@ -8,8 +8,8 @@ import (
 )
 
 type TransactionUseCase interface {
-	CreateTransaction(ctx context.Context, tx *models.Transaction) (*models.Transaction, error)
-	GetTransactionById(ctx context.Context, id int) (*models.Transaction, error)
+	CreateTransaction(ctx context.Context, tx *models.Transactions) (*models.Transactions, error)
+	GetTransactionById(ctx context.Context, id int) (*models.Transactions, error)
 }
 
 type transactionUsecase struct {
@@ -20,11 +20,11 @@ func NewTransactionUsecase(r repositories.TransactionRepository) TransactionUseC
 	return &transactionUsecase{repo: r}
 }
 
-func (uc *transactionUsecase) GetTransactionById(ctx context.Context, id int) (*models.Transaction, error) {
+func (uc *transactionUsecase) GetTransactionById(ctx context.Context, id int) (*models.Transactions, error) {
 	return uc.repo.GetByID(ctx, id)
 }
 
-func (uc *transactionUsecase) CreateTransaction(ctx context.Context, tx *models.Transaction) (*models.Transaction, error) {
+func (uc *transactionUsecase) CreateTransaction(ctx context.Context, tx *models.Transactions) (*models.Transactions, error) {
 	tx.TransactionDate = time.Now()
 	return uc.repo.Insert(ctx, tx)
 }

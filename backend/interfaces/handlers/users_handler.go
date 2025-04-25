@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	userUseCase "DummyMultifinance/usecases/user"
+	userUseCase "DummyMultifinance/usecases/users"
 	"encoding/json"
 	"net/http"
 )

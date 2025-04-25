@@ -19,7 +19,7 @@ func TestE2E_UserFlow(t *testing.T) {
 	}
 
 	// Simulating a new user registration
-	newUser := &models.User{Username: "testuser", Password: "password"}
+	newUser := &models.Users{Username: "testuser", Password: "password"}
 	url := os.Getenv("APP_HOST") + ":" + os.Getenv("APP_PORT") + "/register"
 
 	reqBody, _ := json.Marshal(newUser)

@@ -22,17 +22,17 @@ type UserUseCase struct {
 	UserRepo repositories.UserRepository
 }
 
-func (uc *UserUseCase) GetUserByID(id int) (*models.User, error) {
+func (uc *UserUseCase) GetUserByID(id int) (*models.Users, error) {
 	return uc.UserRepo.GetByID(id)
 }
 
-func (uc *UserUseCase) CreateUser(username, password string) (*models.User, error) {
+func (uc *UserUseCase) CreateUser(username, password string) (*models.Users, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %v", err)
 	}
 
-	user := &models.User{
+	user := &models.Users{
 		Username: username,
 		Password: string(hashedPassword),
 	}
@@ -40,7 +40,7 @@ func (uc *UserUseCase) CreateUser(username, password string) (*models.User, erro
 	return uc.UserRepo.CreateUser(user)
 }
 
-func (uc *UserUseCase) ValidateRole(user *models.User, role string) bool {
+func (uc *UserUseCase) ValidateRole(user *models.Users, role string) bool {
 	return user.Role == role
 }
 
