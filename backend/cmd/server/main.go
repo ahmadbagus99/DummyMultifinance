@@ -30,8 +30,8 @@ func main() {
 
 	userUseCase := userUseCase.NewUserUsecase(userRepo)
 	consumerUseCase := consumerUseCase.NewConsumerUsecase(consumersRepo)
-	transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionsRepo)
 	limitUseCase := limitUseCase.NewTransactionUsecase(limitsRepo)
+	transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionsRepo, consumersRepo, limitsRepo)
 
 	useCases := &usecases.UseCases{
 		UserUseCase:        userUseCase,

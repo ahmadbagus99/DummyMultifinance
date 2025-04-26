@@ -7,6 +7,12 @@ CREATE TABLE IF NOT EXISTS roles (
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
+-- tenors table
+CREATE TABLE IF NOT EXISTS tenors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,10 +44,9 @@ CREATE TABLE IF NOT EXISTS consumers (
 -- Limits table
 CREATE TABLE IF NOT EXISTS limits (
     consumer_id INT NOT NULL,
-    limit_1 INT NOT NULL,
-    limit_2 INT NOT NULL,
-    limit_3 INT NOT NULL,
-    limit_6 INT NOT NULL,
+    tenor_id INT NOT NULL,
+    Amount INT NOT NULL,
+    FOREIGN KEY (tenor_id) REFERENCES tenors(id),
     FOREIGN KEY (consumer_id) REFERENCES consumers(id)
 );
 
@@ -56,5 +61,25 @@ CREATE TABLE IF NOT EXISTS transactions (
     interest DECIMAL(15, 2) NOT NULL,          
     asset_name VARCHAR(255) NOT NULL,          
     transaction_date DATETIME NOT NULL,     
+    approved BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (consumer_id) REFERENCES consumers(id)
 );
+
+-- Menambahkan role default
+INSERT INTO roles (name) VALUES 
+('System administrators'),
+('All employees');
+
+-- Menambahkan tenor default
+INSERT INTO tenors (name) VALUES 
+('Tenor 1'),
+('Tenor 2'),
+('Tenor 3'),
+('Tenor 6');
+
+-- Menambahkan admin user
+-- (gunakan password hash bcrypt yang valid)
+INSERT INTO users (username, email, password, role_id, created_at)
+VALUES 
+('admin', 'admin@example.com', '$2a$10$UBBhm00/TYiXWcVjButJROW0MhzPtwEhiITDotkCdsAQkgDFP5xmq', 1, CURRENT_TIMESTAMP);
+

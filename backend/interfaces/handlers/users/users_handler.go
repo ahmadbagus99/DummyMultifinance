@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"DummyMultifinance/domain/models"
+	handlers "DummyMultifinance/interfaces/handlers"
 	userUseCase "DummyMultifinance/usecases/users"
 	"encoding/json"
 	"fmt"
@@ -21,23 +22,23 @@ func NewUserHandler(uc userUseCase.UserUseCase) *UserHandler {
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		GeneralResponse(w, http.StatusMethodNotAllowed, "BadRequest", "Invalid method", nil)
+		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
 		return
 	}
 
 	var tx models.Users
 	if err := json.NewDecoder(r.Body).Decode(&tx); err != nil {
-		GeneralResponse(w, http.StatusBadRequest, BadRequest, err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusBadRequest, handlers.BadRequest, err.Error(), nil)
 		return
 	}
 
 	createdTx, err := h.UserUseCase.CreateUser(r.Context(), &tx)
 	if err != nil {
-		GeneralResponse(w, http.StatusInternalServerError, "ServerError", err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
 		return
 	}
 
-	GeneralResponse(w, http.StatusOK, "Success", Success, createdTx)
+	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Success", createdTx)
 }
 
 func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -47,13 +48,13 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		GeneralResponse(w, http.StatusInternalServerError, ServerError, err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
 		return
 	}
 
 	token, expiredTime, err := h.UserUseCase.Login(r.Context(), input.Username, input.Password)
 	if err != nil {
-		GeneralResponse(w, http.StatusUnauthorized, Unauthorized, err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusUnauthorized, handlers.Unauthorized, err.Error(), nil)
 		return
 	}
 
@@ -63,41 +64,37 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		"expiredAt":   expiredTime,
 	}
 
-	GeneralResponse(w, http.StatusOK, Success, "Successful", responseData)
+	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Success", responseData)
 }
 
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		GeneralResponse(w, http.StatusMethodNotAllowed, "BadRequest", "Invalid method", nil)
+		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
 		return
 	}
 
-	// Ambil ID transaksi dari query parameter
 	idParam := r.URL.Query().Get("id")
 	if idParam == "" {
-		GeneralResponse(w, http.StatusBadRequest, "BadRequest", "Missing transaction ID", nil)
+		handlers.GeneralResponse(w, http.StatusBadRequest, handlers.BadRequest, "Missing user ID", nil)
 		return
 	}
 
-	// Convert ID dari string ke integer
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		GeneralResponse(w, http.StatusBadRequest, "BadRequest", "Invalid transaction ID format", nil)
+		handlers.GeneralResponse(w, http.StatusBadRequest, "BadRequest", "Invalid user ID format", nil)
 		return
 	}
 
-	// Panggil usecase untuk mendapatkan transaksi berdasarkan ID
 	tx, err := h.UserUseCase.GetUserById(r.Context(), id)
 	if err != nil {
-		GeneralResponse(w, http.StatusInternalServerError, "ServerError", err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
 		return
 	}
 
 	if tx == nil {
-		GeneralResponse(w, http.StatusNotFound, "NotFound", fmt.Sprintf("Transaction with ID %d not found", id), nil)
+		handlers.GeneralResponse(w, http.StatusNotFound, handlers.DataNotFound, fmt.Sprintf("User with ID %d not found", id), nil)
 		return
 	}
 
-	// Response transaksi yang ditemukan
-	GeneralResponse(w, http.StatusOK, "Success", "Transaction retrieved successfully", tx)
+	handlers.GeneralResponse(w, http.StatusOK, "Success", "User retrieved successfully", tx)
 }

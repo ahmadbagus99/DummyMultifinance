@@ -11,5 +11,6 @@ type Transactions struct {
 	Installment     float64   `json:"installment"`
 	Interest        float64   `json:"interest"`
 	AssetName       string    `json:"asset_name"`
+	Approved        bool      `json:"approved"`
 	TransactionDate time.Time `json:"transaction_date"`
 }

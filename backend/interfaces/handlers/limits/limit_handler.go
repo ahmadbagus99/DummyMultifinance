@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"DummyMultifinance/domain/models"
+	handlers "DummyMultifinance/interfaces/handlers"
 	limitUseCase "DummyMultifinance/usecases/limits"
 	"encoding/json"
 	"fmt"
@@ -21,53 +22,53 @@ func NewLimitHandler(uc limitUseCase.LimiUseCase) *LimitHandler {
 
 func (h *LimitHandler) CreateLimit(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		GeneralResponse(w, http.StatusMethodNotAllowed, "BadRequest", "Invalid method", nil)
+		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
 		return
 	}
 
 	var tx models.Limits
 	if err := json.NewDecoder(r.Body).Decode(&tx); err != nil {
-		GeneralResponse(w, http.StatusBadRequest, BadRequest, err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusBadRequest, handlers.BadRequest, err.Error(), nil)
 		return
 	}
 
 	createdTx, err := h.LimitUseCase.CreateLimit(r.Context(), &tx)
 	if err != nil {
-		GeneralResponse(w, http.StatusInternalServerError, "ServerError", err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
 		return
 	}
 
-	GeneralResponse(w, http.StatusOK, "Success", Success, createdTx)
+	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Success", createdTx)
 }
 
 func (h *LimitHandler) GetLimit(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		GeneralResponse(w, http.StatusMethodNotAllowed, "BadRequest", "Invalid method", nil)
+		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
 		return
 	}
 
 	idParam := r.URL.Query().Get("id")
 	if idParam == "" {
-		GeneralResponse(w, http.StatusBadRequest, "BadRequest", "Missing transaction ID", nil)
+		handlers.GeneralResponse(w, http.StatusBadRequest, handlers.BadRequest, "Missing limit ID", nil)
 		return
 	}
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		GeneralResponse(w, http.StatusBadRequest, "BadRequest", "Invalid transaction ID format", nil)
+		handlers.GeneralResponse(w, http.StatusBadRequest, handlers.BadRequest, "Invalid limit ID format", nil)
 		return
 	}
 
 	tx, err := h.LimitUseCase.GetLimitById(r.Context(), id)
 	if err != nil {
-		GeneralResponse(w, http.StatusInternalServerError, "ServerError", err.Error(), nil)
+		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
 		return
 	}
 
 	if tx == nil {
-		GeneralResponse(w, http.StatusNotFound, "NotFound", fmt.Sprintf("Transaction with ID %d not found", id), nil)
+		handlers.GeneralResponse(w, http.StatusNotFound, handlers.DataNotFound, fmt.Sprintf("Limit with ID %d not found", id), nil)
 		return
 	}
 
-	GeneralResponse(w, http.StatusOK, "Success", "Transaction retrieved successfully", tx)
+	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Limit retrieved successfully", tx)
 }

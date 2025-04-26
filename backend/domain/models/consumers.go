@@ -16,3 +16,10 @@ type Consumers struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
+
+type ConsumersLimit struct {
+	ConsumerID int     `json:"consumer_id"`
+	TenorID    int     `json:"tenor_id"`
+	Tenor      string  `json:"tenor"`
+	Amount     float64 `json:"amount"`
+}

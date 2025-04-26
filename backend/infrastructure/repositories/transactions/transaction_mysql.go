@@ -17,8 +17,8 @@ func NewMysqlTransactionRepo(db *sql.DB) repositories.TransactionRepository {
 
 func (m *mysqlTransactionRepo) Insert(ctx context.Context, tx *models.Transactions) (*models.Transactions, error) {
 	query := `INSERT INTO transactions 
-        (contract_number, consumer_id, otr, admin_fee, installment, interest, asset_name, transaction_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        (contract_number, consumer_id, otr, admin_fee, installment, interest, asset_name, transaction_date, approved)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	result, err := m.DB.ExecContext(ctx, query,
 		tx.ContractNumber,
@@ -29,6 +29,7 @@ func (m *mysqlTransactionRepo) Insert(ctx context.Context, tx *models.Transactio
 		tx.Interest,
 		tx.AssetName,
 		tx.TransactionDate,
+		tx.Approved,
 	)
 	if err != nil {
 		return nil, err
@@ -44,7 +45,7 @@ func (m *mysqlTransactionRepo) Insert(ctx context.Context, tx *models.Transactio
 }
 
 func (m *mysqlTransactionRepo) GetByID(ctx context.Context, id int) (*models.Transactions, error) {
-	query := `SELECT id, contract_number, consumer_id, otr, admin_fee, installment, interest, asset_name, transaction_date
+	query := `SELECT id, contract_number, consumer_id, otr, admin_fee, installment, interest, asset_name, transaction_date, approved
               FROM transactions WHERE id = ?`
 
 	row := m.DB.QueryRowContext(ctx, query, id)
@@ -60,6 +61,7 @@ func (m *mysqlTransactionRepo) GetByID(ctx context.Context, id int) (*models.Tra
 		&tx.Interest,
 		&tx.AssetName,
 		&tx.TransactionDate,
+		&tx.Approved,
 	)
 	if err != nil {
 		return nil, err

@@ -6,6 +6,7 @@ import (
 )
 
 type ConsumerRepository interface {
-	GetByID(ctx context.Context, id int) (*models.Consumers, error)
 	Insert(ctx context.Context, tx *models.Consumers) (*models.Consumers, error)
+	GetByID(ctx context.Context, id int) (*models.Consumers, error)
+	GetConsumerLimit(ctx context.Context, consumer_id int) ([]models.ConsumersLimit, error)
 }
