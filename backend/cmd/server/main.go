@@ -2,16 +2,21 @@ package main
 
 import (
 	"DummyMultifinance/infrastructure/config"
-	infrastructureConsumer "DummyMultifinance/infrastructure/repositories/consumers"
-	infrastructureTransaction "DummyMultifinance/infrastructure/repositories/transactions"
-	infrastructureUser "DummyMultifinance/infrastructure/repositories/users"
-	routes "DummyMultifinance/interfaces/routes"
 	"DummyMultifinance/usecases"
-	consumerUseCase "DummyMultifinance/usecases/consumers"
-	transactionUseCase "DummyMultifinance/usecases/transactions"
-	userUseCase "DummyMultifinance/usecases/users"
 	"fmt"
 	"net/http"
+
+	routes "DummyMultifinance/interfaces/routes"
+
+	infrastructureConsumer "DummyMultifinance/infrastructure/repositories/consumers"
+	infrastructureLimit "DummyMultifinance/infrastructure/repositories/limits"
+	infrastructureTransaction "DummyMultifinance/infrastructure/repositories/transactions"
+	infrastructureUser "DummyMultifinance/infrastructure/repositories/users"
+
+	consumerUseCase "DummyMultifinance/usecases/consumers"
+	limitUseCase "DummyMultifinance/usecases/limits"
+	transactionUseCase "DummyMultifinance/usecases/transactions"
+	userUseCase "DummyMultifinance/usecases/users"
 )
 
 func main() {
@@ -21,15 +26,18 @@ func main() {
 	userRepo := infrastructureUser.NewMysqlUserRepo(db)
 	consumersRepo := infrastructureConsumer.NewMysqlConsumerRepo(db)
 	transactionsRepo := infrastructureTransaction.NewMysqlTransactionRepo(db)
+	limitsRepo := infrastructureLimit.NewMysqlLimitRepo(db)
 
 	userUseCase := userUseCase.NewUserUsecase(userRepo)
 	consumerUseCase := consumerUseCase.NewConsumerUsecase(consumersRepo)
 	transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionsRepo)
+	limitUseCase := limitUseCase.NewTransactionUsecase(limitsRepo)
 
 	useCases := &usecases.UseCases{
 		UserUseCase:        userUseCase,
-		TransactionUseCase: transactionUseCase,
 		ConsumerUseCase:    consumerUseCase,
+		TransactionUseCase: transactionUseCase,
+		LimitUseCase:       limitUseCase,
 	}
 
 	router := routes.NewRouter(useCases)

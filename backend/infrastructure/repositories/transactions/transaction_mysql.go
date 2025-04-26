@@ -22,7 +22,7 @@ func (m *mysqlTransactionRepo) Insert(ctx context.Context, tx *models.Transactio
 
 	result, err := m.DB.ExecContext(ctx, query,
 		tx.ContractNumber,
-		tx.CustomerID,
+		tx.ConsumerID,
 		tx.OTR,
 		tx.AdminFee,
 		tx.Installment,
@@ -53,7 +53,7 @@ func (m *mysqlTransactionRepo) GetByID(ctx context.Context, id int) (*models.Tra
 	err := row.Scan(
 		&tx.ID,
 		&tx.ContractNumber,
-		&tx.CustomerID,
+		&tx.ConsumerID,
 		&tx.OTR,
 		&tx.AdminFee,
 		&tx.Installment,
