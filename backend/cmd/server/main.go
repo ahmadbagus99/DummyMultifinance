@@ -20,7 +20,6 @@ import (
 )
 
 func main() {
-	config.LoadEnv()
 	db := config.NewDB()
 
 	userRepo := infrastructureUser.NewMysqlUserRepo(db)

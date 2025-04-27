@@ -1,41 +1,96 @@
-package testing
+package integration
 
 import (
-	userUseCase "DummyMultifinance/usecases/users"
+	"DummyMultifinance/domain/models"
+	"DummyMultifinance/domain/repositories"
+	"DummyMultifinance/infrastructure/config"
+	repositoriesMySQL "DummyMultifinance/infrastructure/repositories/users"
+	usecases "DummyMultifinance/usecases/users"
+	"context"
+	"fmt"
+	"log"
+	"path/filepath"
+	"testing"
 
-	"github.com/stretchr/testify/suite"
+	"database/sql"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
+	"github.com/stretchr/testify/assert"
 )
 
-type UserUseCaseIntegrationTestSuite struct {
-	suite.Suite
-	userUseCase *userUseCase.UserUseCase
+var db *sql.DB
+var userRepo repositories.UserRepository
+var userUseCase usecases.UserUseCase
+
+func setup() {
+	filename := fmt.Sprintf(".env.%s", config.GetAppEnv())
+	envPath := filepath.Join("..", "..", filename)
+
+	err := godotenv.Load(envPath)
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	user := config.GetEnv("DB_USERNAME", "root")
+	password := config.GetEnv("DB_PASSWORD", "")
+	host := config.GetEnv("DB_HOST", "localhost")
+	port := config.GetEnv("DB_PORT", "3306")
+	dbname := config.GetEnv("DB_NAME", "3306")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, dbname)
+
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatalf("Error opening DB: %v", err)
+	}
+
+	userRepo = repositoriesMySQL.NewMysqlUserRepo(db)
+	userUseCase = usecases.NewUserUsecase(userRepo)
+
+	if userRepo == nil || userUseCase == nil {
+		log.Fatal("userRepo or userUseCase is nil!")
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(255) NOT NULL,
+			password VARCHAR(255) NOT NULL,
+			role_id INT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(id)
+		)
+	`)
+	if err != nil {
+		panic("failed to migrate database schema: " + err.Error())
+	}
 }
 
-// func (suite *UserUseCaseIntegrationTestSuite) SetupSuite() {
-// 	// Set up database or mock database connection here
-// 	os.Setenv("SECRET_KEY", "supersecretkey")
-// 	db := database.SetupDB()
-// 	repo := &database.UserRepo{DB: db}
-// 	suite.userUseCase = &usecases.UserUseCase{UserRepo: repo}
-// }
+func teardown() {
+	_, err := db.Exec("DELETE FROM users")
+	if err != nil {
+		panic("failed to delete data from users table: " + err.Error())
+	}
+}
 
-// func (suite *UserUseCaseIntegrationTestSuite) TestCreateUser() {
-// 	Users, err := suite.userUseCase.CreateUser("testuser", "password")
-// 	assert.NoError(suite.T(), err)
-// 	assert.Equal(suite.T(), "testuser", Users.Username)
-// }
+func TestCreateUserIntegration(t *testing.T) {
+	setup()
+	defer teardown()
 
-// func (suite *UserUseCaseIntegrationTestSuite) TestLogin() {
-// 	// Creating user first
-// 	suite.userUseCase.CreateUser("testuser", "password")
+	user := &models.Users{
+		Username: "testuser",
+		Password: "password123",
+		RoleID:   "1",
+		Email:    "test@email.com",
+	}
 
-// 	token, expiration, err := suite.userUseCase.Login("testuser", "password")
+	createdUser, err := userUseCase.CreateUser(context.Background(), user)
 
-// 	assert.NoError(suite.T(), err)
-// 	assert.NotEmpty(suite.T(), token)
-// 	assert.NotEmpty(suite.T(), expiration)
-// }
+	assert.NoError(t, err)
+	assert.NotNil(t, createdUser)
+	assert.Equal(t, "testuser", createdUser.Username)
+	assert.Equal(t, "1", createdUser.RoleID)
+	assert.Equal(t, "test@email.com", createdUser.Email)
 
-// func TestUserUseCaseIntegrationTestSuite(t *testing.T) {
-// 	suite.Run(t, new(UserUseCaseIntegrationTestSuite))
-// }
+}

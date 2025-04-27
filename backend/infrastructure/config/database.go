@@ -10,6 +10,7 @@ import (
 
 func NewDB() *sql.DB {
 	LoadEnv()
+
 	user := GetEnv("DB_USERNAME", "root")
 	password := GetEnv("DB_PASSWORD", "")
 	host := GetEnv("DB_HOST", "localhost")

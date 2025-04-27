@@ -8,17 +8,25 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func LoadEnv() {
+func GetAppEnv() string {
 	env := os.Getenv("APP_ENV")
 	if env == "" {
 		env = "development"
 	}
+
+	return env
+}
+
+func LoadEnv() {
+	env := GetAppEnv()
 
 	filename := fmt.Sprintf(".env.%s", env)
 	err := godotenv.Load(filename)
 	if err != nil {
 		log.Fatalf("Gagal load %s: %v", filename, err)
 	}
+
+	log.Println("APP_ENV:", os.Getenv("APP_ENV"))
 }
 
 func GetEnv(key, fallback string) string {
