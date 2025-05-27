@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	common "DummyMultifinance/domain/common"
 	"DummyMultifinance/domain/models"
 	"DummyMultifinance/domain/repositories"
 	"context"
@@ -12,11 +13,15 @@ type mysqlLimitRepo struct {
 	DB *sql.DB
 }
 
+func (m *mysqlLimitRepo) GetDB() *sql.DB {
+	return m.DB
+}
+
 func NewMysqlLimitRepo(db *sql.DB) repositories.LimitRepository {
 	return &mysqlLimitRepo{DB: db}
 }
 
-func (m *mysqlLimitRepo) Insert(ctx context.Context, tx *models.Limits) (*models.Limits, error) {
+func (m *mysqlLimitRepo) Insert(ctx context.Context, execer common.Execer, tx *models.Limits) (*models.Limits, error) {
 	query := `INSERT INTO limits 
         (consumer_id, tenor_id, amount)
         VALUES (?, ?, ?)`
@@ -59,7 +64,7 @@ func (m *mysqlLimitRepo) GetByID(ctx context.Context, id int) (*models.Limits, e
 	return &tx, nil
 }
 
-func (m *mysqlLimitRepo) UpdateLimit(ctx context.Context, consumer_id int, tenor int, amount float64) error {
+func (m *mysqlLimitRepo) UpdateLimit(ctx context.Context, dbTx *sql.Tx, consumer_id int, tenor int, amount float64) error {
 	var limit float64
 	query := `SELECT amount FROM limits WHERE consumer_id = ? AND tenor_id = ?`
 
@@ -79,7 +84,7 @@ func (m *mysqlLimitRepo) UpdateLimit(ctx context.Context, consumer_id int, tenor
 	newLimit := limit - amount
 	updateQuery := `UPDATE limits SET amount = ? WHERE consumer_id = ? AND tenor_id = ?`
 
-	_, err = m.DB.ExecContext(ctx, updateQuery, newLimit, consumer_id, tenor)
+	_, err = dbTx.ExecContext(ctx, updateQuery, newLimit, consumer_id, tenor)
 	if err != nil {
 		return fmt.Errorf("failed to update limit: %v", err)
 	}

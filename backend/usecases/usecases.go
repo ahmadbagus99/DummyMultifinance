@@ -11,10 +11,10 @@ type UseCases struct {
 	UserUseCase        userUseCase.UserUseCase
 	TransactionUseCase transactionUseCase.TransactionUseCase
 	ConsumerUseCase    consumerUseCase.ConsumerUseCase
-	LimitUseCase       limitUseCase.LimiUseCase
+	LimitUseCase       limitUseCase.LimitUseCase
 }
 
-func NewUseCases(userUC userUseCase.UserUseCase, transactionUC transactionUseCase.TransactionUseCase, consumerUC consumerUseCase.ConsumerUseCase, limitUC limitUseCase.LimiUseCase) *UseCases {
+func NewUseCases(userUC userUseCase.UserUseCase, transactionUC transactionUseCase.TransactionUseCase, consumerUC consumerUseCase.ConsumerUseCase, limitUC limitUseCase.LimitUseCase) *UseCases {
 	return &UseCases{
 		UserUseCase:        userUC,
 		TransactionUseCase: transactionUC,

@@ -1,31 +1,31 @@
 package infrastructure
 
 import (
+	common "DummyMultifinance/domain/common"
 	"DummyMultifinance/domain/models"
 	"DummyMultifinance/domain/repositories"
 	"context"
-	"database/sql"
 )
 
 type mysqlUserRepo struct {
-	DB *sql.DB
+	DB common.Execer
 }
 
-func NewMysqlUserRepo(db *sql.DB) repositories.UserRepository {
+func NewMysqlUserRepo(db common.Execer) repositories.UserRepository {
 	return &mysqlUserRepo{DB: db}
 }
 
-func (m *mysqlUserRepo) Insert(ctx context.Context, tx *models.Users) (*models.Users, error) {
+func (m *mysqlUserRepo) Insert(ctx context.Context, user *models.Users) (*models.Users, error) {
 	query := `INSERT INTO users 
         (username, password, role_id, email, created_at)
         VALUES (?, ?, ?, ?, ?)`
 
 	result, err := m.DB.ExecContext(ctx, query,
-		tx.Username,
-		tx.Password,
-		tx.RoleID,
-		tx.Email,
-		tx.CreatedAt,
+		user.Username,
+		user.Password,
+		user.RoleID,
+		user.Email,
+		user.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -36,30 +36,30 @@ func (m *mysqlUserRepo) Insert(ctx context.Context, tx *models.Users) (*models.U
 		return nil, err
 	}
 
-	tx.ID = int(id)
-	return tx, nil
+	user.ID = int(id)
+	return user, nil
 }
 
 func (m *mysqlUserRepo) GetUserByID(ctx context.Context, id int) (*models.Users, error) {
 	query := `SELECT id, username, password, role_id, email, created_at
-              FROM transactions WHERE id = ?`
+              FROM users WHERE id = ?`
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 
-	var tx models.Users
+	var user models.Users
 	err := row.Scan(
-		&tx.ID,
-		&tx.Username,
-		&tx.Password,
-		&tx.RoleID,
-		&tx.Email,
-		&tx.CreatedAt,
+		&user.ID,
+		&user.Username,
+		&user.Password,
+		&user.RoleID,
+		&user.Email,
+		&user.CreatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &tx, nil
+	return &user, nil
 }
 
 func (m *mysqlUserRepo) GetUserByUsername(ctx context.Context, username string) (*models.Users, error) {

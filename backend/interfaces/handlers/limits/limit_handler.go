@@ -11,16 +11,16 @@ import (
 )
 
 type LimitHandler struct {
-	LimitUseCase limitUseCase.LimiUseCase
+	LimitUseCase limitUseCase.LimitUseCase
 }
 
-func NewLimitHandler(uc limitUseCase.LimiUseCase) *LimitHandler {
+func NewLimitHandler(uc limitUseCase.LimitUseCase) *LimitHandler {
 	return &LimitHandler{
 		LimitUseCase: uc,
 	}
 }
 
-func (h *LimitHandler) CreateLimit(w http.ResponseWriter, r *http.Request) {
+func (h *LimitHandler) InsertLimit(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
 		return

@@ -28,7 +28,7 @@ func NewRouter(useCases *usecases.UseCases) *http.ServeMux {
 	router.HandleFunc("/insert-transaction", middlewares.TokenValidation(transactionHandler.CreateTransaction))
 	router.HandleFunc("/get-transaction", middlewares.TokenValidation(transactionHandler.GetTransaction))
 
-	router.HandleFunc("/insert-limits", middlewares.TokenValidation(limitHandler.CreateLimit))
+	router.HandleFunc("/insert-limits", middlewares.TokenValidation(limitHandler.InsertLimit))
 	router.HandleFunc("/get-limit", middlewares.TokenValidation(limitHandler.GetLimit))
 
 	return router

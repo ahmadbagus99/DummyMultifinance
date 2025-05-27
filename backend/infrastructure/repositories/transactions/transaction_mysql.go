@@ -11,16 +11,20 @@ type mysqlTransactionRepo struct {
 	DB *sql.DB
 }
 
+func (m *mysqlTransactionRepo) GetDB() *sql.DB {
+	return m.DB
+}
+
 func NewMysqlTransactionRepo(db *sql.DB) repositories.TransactionRepository {
 	return &mysqlTransactionRepo{DB: db}
 }
 
-func (m *mysqlTransactionRepo) Insert(ctx context.Context, tx *models.Transactions) (*models.Transactions, error) {
+func (m *mysqlTransactionRepo) Insert(ctx context.Context, dbTx *sql.Tx, tx *models.Transactions) (*models.Transactions, error) {
 	query := `INSERT INTO transactions 
         (contract_number, consumer_id, otr, admin_fee, installment, interest, asset_name, transaction_date, approved)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	result, err := m.DB.ExecContext(ctx, query,
+	result, err := dbTx.ExecContext(ctx, query,
 		tx.ContractNumber,
 		tx.ConsumerID,
 		tx.OTR,

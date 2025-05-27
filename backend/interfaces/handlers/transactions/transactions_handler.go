@@ -43,13 +43,7 @@ func (h *TransactionHandler) CreateTransaction(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	createdTx, err := h.TransactionUseCase.CreateTransaction(r.Context(), loanRequestTransaction)
-	if err != nil {
-		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
-		return
-	}
-
-	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Transaction created successfully", createdTx)
+	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Transaction created successfully", loanRequestTransaction)
 }
 
 func (h *TransactionHandler) GetTransaction(w http.ResponseWriter, r *http.Request) {

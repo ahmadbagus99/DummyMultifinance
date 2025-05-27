@@ -3,13 +3,15 @@ package usecases
 import (
 	"DummyMultifinance/domain/models"
 	"DummyMultifinance/domain/repositories"
+	"database/sql"
+
 	"context"
 	"fmt"
 	"time"
 )
 
 type TransactionUseCase interface {
-	CreateTransaction(ctx context.Context, tx *models.Transactions) (*models.Transactions, error)
+	CreateTransaction(ctx context.Context, dbTx *sql.Tx, tx *models.Transactions) (*models.Transactions, error)
 	RequestTransaction(ctx context.Context, consumer_id int, asset_name string, tenor int, amount float64) (*models.Transactions, error)
 	GetTransactionById(ctx context.Context, id int) (*models.Transactions, error)
 }
@@ -18,13 +20,15 @@ type transactionUsecase struct {
 	repo         repositories.TransactionRepository
 	repoConsumer repositories.ConsumerRepository
 	repoLimit    repositories.LimitRepository
+	DB           *sql.Tx
 }
 
-func NewTransactionUsecase(r repositories.TransactionRepository, repoConsumer repositories.ConsumerRepository, repoLimit repositories.LimitRepository) TransactionUseCase {
+func NewTransactionUsecase(repoTransaction repositories.TransactionRepository, repoConsumer repositories.ConsumerRepository, repoLimit repositories.LimitRepository, db *sql.Tx) TransactionUseCase {
 	return &transactionUsecase{
-		repo:         r,
+		repo:         repoTransaction,
 		repoConsumer: repoConsumer,
 		repoLimit:    repoLimit,
+		DB:           db,
 	}
 }
 
@@ -32,12 +36,26 @@ func (uc *transactionUsecase) GetTransactionById(ctx context.Context, id int) (*
 	return uc.repo.GetByID(ctx, id)
 }
 
-func (uc *transactionUsecase) CreateTransaction(ctx context.Context, tx *models.Transactions) (*models.Transactions, error) {
-	tx.TransactionDate = time.Now()
-	return uc.repo.Insert(ctx, tx)
+func (uc *transactionUsecase) CreateTransaction(ctx context.Context, dbTx *sql.Tx, transaction *models.Transactions) (*models.Transactions, error) {
+	transaction.TransactionDate = time.Now()
+	return uc.repo.Insert(ctx, dbTx, transaction)
 }
 
 func (uc *transactionUsecase) RequestTransaction(ctx context.Context, consumer_id int, asset_name string, tenor int, amount float64) (*models.Transactions, error) {
+	tx, err := uc.repo.GetDB().BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	listConsumerLimit, err := uc.repoConsumer.GetConsumerLimit(ctx, consumer_id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get consumer limits: %v", err)
@@ -89,14 +107,19 @@ func (uc *transactionUsecase) RequestTransaction(ctx context.Context, consumer_i
 		TransactionDate: time.Now(),
 	}
 
-	createdTx, err := uc.repo.Insert(ctx, loanRequestTransaction)
+	createdTx, err := uc.CreateTransaction(ctx, tx, loanRequestTransaction)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save transaction: %v", err)
 	}
 
-	err = uc.repoLimit.UpdateLimit(ctx, consumer_id, tenor, amount)
+	err = uc.repoLimit.UpdateLimit(ctx, tx, consumer_id, tenor, amount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update consumer limit: %v", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %v", err)
 	}
 
 	return createdTx, nil

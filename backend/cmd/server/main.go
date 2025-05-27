@@ -4,6 +4,7 @@ import (
 	"DummyMultifinance/infrastructure/config"
 	"DummyMultifinance/usecases"
 	"fmt"
+	"log"
 	"net/http"
 
 	routes "DummyMultifinance/interfaces/routes"
@@ -22,6 +23,11 @@ import (
 func main() {
 	db := config.NewDB()
 
+	tx, err := db.Begin()
+	if err != nil {
+		log.Fatalf("Error opening DB: %v", err)
+	}
+
 	userRepo := infrastructureUser.NewMysqlUserRepo(db)
 	consumersRepo := infrastructureConsumer.NewMysqlConsumerRepo(db)
 	transactionsRepo := infrastructureTransaction.NewMysqlTransactionRepo(db)
@@ -29,8 +35,8 @@ func main() {
 
 	userUseCase := userUseCase.NewUserUsecase(userRepo)
 	consumerUseCase := consumerUseCase.NewConsumerUsecase(consumersRepo)
-	limitUseCase := limitUseCase.NewTransactionUsecase(limitsRepo)
-	transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionsRepo, consumersRepo, limitsRepo)
+	limitUseCase := limitUseCase.NewLimitUsecase(limitsRepo, tx)
+	transactionUseCase := transactionUseCase.NewTransactionUsecase(transactionsRepo, consumersRepo, limitsRepo, tx)
 
 	useCases := &usecases.UseCases{
 		UserUseCase:        userUseCase,

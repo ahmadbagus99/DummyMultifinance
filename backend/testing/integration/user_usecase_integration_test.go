@@ -20,6 +20,7 @@ import (
 )
 
 var db *sql.DB
+var tx *sql.Tx
 var userRepo repositories.UserRepository
 var userUseCase usecases.UserUseCase
 
@@ -36,28 +37,34 @@ func setup() {
 	password := config.GetEnv("DB_PASSWORD", "")
 	host := config.GetEnv("DB_HOST", "localhost")
 	port := config.GetEnv("DB_PORT", "3306")
-	dbname := config.GetEnv("DB_NAME", "3306")
+	dbname := config.GetEnv("DB_NAME", "dummy_multifinance_dev")
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, dbname)
 
-	db, err := sql.Open("mysql", dsn)
+	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatalf("Error opening DB: %v", err)
 	}
 
-	userRepo = repositoriesMySQL.NewMysqlUserRepo(db)
+	tx, err = db.Begin()
+	if err != nil {
+		log.Fatalf("Error starting transaction: %v", err)
+	}
+
+	userRepo = repositoriesMySQL.NewMysqlUserRepo(tx)
 	userUseCase = usecases.NewUserUsecase(userRepo)
 
 	if userRepo == nil || userUseCase == nil {
 		log.Fatal("userRepo or userUseCase is nil!")
 	}
 
-	_, err = db.Exec(`
+	_, err = tx.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id INT AUTO_INCREMENT PRIMARY KEY,
 			username VARCHAR(255) NOT NULL,
 			password VARCHAR(255) NOT NULL,
 			role_id INT NOT NULL,
+			email VARCHAR(255),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(id)
 		)
@@ -68,9 +75,8 @@ func setup() {
 }
 
 func teardown() {
-	_, err := db.Exec("DELETE FROM users")
-	if err != nil {
-		panic("failed to delete data from users table: " + err.Error())
+	if tx != nil {
+		tx.Rollback()
 	}
 }
 
@@ -92,5 +98,4 @@ func TestCreateUserIntegration(t *testing.T) {
 	assert.Equal(t, "testuser", createdUser.Username)
 	assert.Equal(t, "1", createdUser.RoleID)
 	assert.Equal(t, "test@email.com", createdUser.Email)
-
 }
