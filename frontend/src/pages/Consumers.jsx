@@ -9,14 +9,13 @@ import {
   filterFns,
 } from "@tanstack/react-table";
 
-const MasterDataSiswa = () => {
+const Consumers = () => {
   const [filtering, setFiltering] = useState("");
   const [data, setData] = useState([]);
 
-  // Fungsi Ambil Data dari API
   const fetchData = async () => {
     try {
-      const token = localStorage.getItem("token"); // Ambil token dari localStorage
+      const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:8096/api/listsiswa", {
         method: "GET",
         headers: {
@@ -28,7 +27,7 @@ const MasterDataSiswa = () => {
       if (!response.ok) throw new Error("Gagal mengambil data");
 
       const result = await response.json();
-      setData(result.data); // Sesuaikan dengan struktur data API
+      setData(result.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -112,14 +111,14 @@ const MasterDataSiswa = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl md:text-3xl text-gray-800 dark:text-gray-100 font-bold">
-        Master Data Siswa
+        Consumers
       </h1>
 
       {/* Search Input */}
       <input
         type="text"
         className="mb-4 p-2 bg-transparent border-b border-gray-300 text-gray-800 dark:text-gray-100 focus:outline-none focus:border rounded w-full"
-        placeholder="Cari siswa..."
+        placeholder="Cari data consumers..."
         value={filtering}
         onChange={(e) => setFiltering(e.target.value)}
       />
@@ -179,4 +178,4 @@ const MasterDataSiswa = () => {
   );
 };
 
-export default MasterDataSiswa;
+export default Consumers;

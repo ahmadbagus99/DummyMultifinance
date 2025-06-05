@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import logoDark from "../images/asta-karya-white.png";
-import logoLight from "../images/asta-karya.png";
+// import logoDark from "../images/asta-karya-white.png";
+// import logoLight from "../images/asta-karya.png";
+import logoDark from "../images/newLight.png";
+import logoLight from "../images/newLight.png";
 
 const Logo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);

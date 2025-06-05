@@ -22,7 +22,8 @@ func NewRouter(useCases *usecases.UseCases) *http.ServeMux {
 	router.HandleFunc("/login", userHandler.Login)
 
 	router.HandleFunc("/insert-consumer", middlewares.TokenValidation(consumerHandler.CreateConsumer))
-	router.HandleFunc("/get-consumer", middlewares.TokenValidation(consumerHandler.GetConsumer))
+	router.HandleFunc("/get-all-consumer", middlewares.TokenValidation(consumerHandler.GetAllConsumer))
+	router.HandleFunc("/get-consumer", middlewares.TokenValidation(consumerHandler.GetConsumerById))
 	router.HandleFunc("/get-consumer-limit", middlewares.TokenValidation(consumerHandler.GetConsumerLimit))
 
 	router.HandleFunc("/insert-transaction", middlewares.TokenValidation(transactionHandler.CreateTransaction))

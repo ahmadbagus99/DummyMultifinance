@@ -20,6 +20,7 @@
     "chartjs-adapter-moment": "^1.0.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
     "moment": "^2.29.4",
     "react": "^19.0.0",
     "react-data-table-component": "^7.7.0",

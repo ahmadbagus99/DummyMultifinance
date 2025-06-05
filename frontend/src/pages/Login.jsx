@@ -14,14 +14,8 @@ const Login = () => {
         setError("");
     
         try {
-            const response = await fetch("http://localhost:8096/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username, password }),
-                mode: "cors",
-            });
+            const response = await login({ username, password });
+
         
             if (response.status === 204) {
                 throw new Error("Server tidak mengembalikan response.");
@@ -33,7 +27,7 @@ const Login = () => {
             const result = await response.json();
             if (result.resultCode === "00") {
                 localStorage.setItem("token", result.data.accessToken);
-                localStorage.setItem("expired", result.data.exp);
+                localStorage.setItem("expired", result.data.expiredAt);
                 navigate("/dashboard", { replace: true });
             } else {
                 setError(result.message || "Login gagal, coba lagi!");

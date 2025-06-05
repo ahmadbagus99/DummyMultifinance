@@ -6,9 +6,9 @@ import "./css/style.css";
 import "./charts/ChartjsConfig";
 
 // Import pages
-import Layout from "./layout/Layout"; // Tambahkan layout utama
+import Layout from "./layout/Layout";
 import Dashboard from "./pages/Dashboard";
-import MasterDataSiswa from "./pages/MasterDataSiswa";
+import Consumers from "./pages/Consumers";
 // import Akademik from "./pages/Akademik";
 // import DokumenKontrak from "./pages/DokumenKontrak";
 import LoginPage from "./pages/Login";
@@ -39,7 +39,7 @@ function App() {
         {/* Default route jika user mengunjungi "/" */}
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
-        <Route path="master-data-siswa" element={<MasterDataSiswa />} />
+        <Route path="list_consumers" element={<Consumers />} />
         {/* <Route path="akademik" element={<Akademik />} />
         <Route path="dokumen-kontrak" element={<DokumenKontrak />} /> */}
       </Route>

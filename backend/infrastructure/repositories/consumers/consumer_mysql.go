@@ -44,6 +44,34 @@ func (m *mysqlConsumerRepo) Insert(ctx context.Context, consumer *models.Consume
 	return consumer, nil
 }
 
+func (m *mysqlConsumerRepo) GetAllData(ctx context.Context) (*models.Consumers, error) {
+	query := `SELECT id, user_id, nik, full_name, legal_name, birth_place, birth_date, salary, ktp_photo, selfie_photo, created_at, updated_at
+              FROM consumers`
+
+	row := m.DB.QueryRowContext(ctx, query)
+
+	var consumer models.Consumers
+	err := row.Scan(
+		&consumer.ID,
+		&consumer.UserID,
+		&consumer.NIK,
+		&consumer.FullName,
+		&consumer.LegalName,
+		&consumer.BirthPlace,
+		&consumer.BirthDate,
+		&consumer.Salary,
+		&consumer.KTPPhoto,
+		&consumer.SelfiePhoto,
+		&consumer.CreatedAt,
+		&consumer.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &consumer, nil
+}
+
 func (m *mysqlConsumerRepo) GetByID(ctx context.Context, id int) (*models.Consumers, error) {
 	query := `SELECT id, user_id, nik, full_name, legal_name, birth_place, birth_date, salary, ktp_photo, selfie_photo, created_at, updated_at
               FROM limits WHERE id = ?`

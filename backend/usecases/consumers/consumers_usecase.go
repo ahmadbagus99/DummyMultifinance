@@ -8,6 +8,7 @@ import (
 
 type ConsumerUseCase interface {
 	CreateConsumer(ctx context.Context, tx *models.Consumers) (*models.Consumers, error)
+	GetAllConsumer(ctx context.Context) (*models.Consumers, error)
 	GetConsumerById(ctx context.Context, id int) (*models.Consumers, error)
 	GetConsumerLimit(ctx context.Context, consumer_id int) ([]models.ConsumersLimit, error)
 }
@@ -22,6 +23,10 @@ func NewConsumerUsecase(r repositories.ConsumerRepository) ConsumerUseCase {
 
 func (uc *consumerUsecase) CreateConsumer(ctx context.Context, tx *models.Consumers) (*models.Consumers, error) {
 	return uc.repo.Insert(ctx, tx)
+}
+
+func (uc *consumerUsecase) GetAllConsumer(ctx context.Context) (*models.Consumers, error) {
+	return uc.repo.GetAllData(ctx)
 }
 
 func (uc *consumerUsecase) GetConsumerById(ctx context.Context, id int) (*models.Consumers, error) {

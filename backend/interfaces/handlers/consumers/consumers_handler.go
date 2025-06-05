@@ -41,7 +41,7 @@ func (h *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Request)
 	handlers.GeneralResponse(w, http.StatusOK, handlers.Success, "Success", createdTx)
 }
 
-func (h *ConsumerHandler) GetConsumer(w http.ResponseWriter, r *http.Request) {
+func (h *ConsumerHandler) GetConsumerById(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
 		return
@@ -67,6 +67,26 @@ func (h *ConsumerHandler) GetConsumer(w http.ResponseWriter, r *http.Request) {
 
 	if tx == nil {
 		handlers.GeneralResponse(w, http.StatusNotFound, handlers.DataNotFound, fmt.Sprintf("Consumer with ID %d not found", id), nil)
+		return
+	}
+
+	handlers.GeneralResponse(w, http.StatusOK, "Success", "Consumer retrieved successfully", tx)
+}
+
+func (h *ConsumerHandler) GetAllConsumer(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		handlers.GeneralResponse(w, http.StatusMethodNotAllowed, handlers.BadRequest, "Invalid method", nil)
+		return
+	}
+
+	tx, err := h.ConsumerUseCase.GetAllConsumer(r.Context())
+	if err != nil {
+		handlers.GeneralResponse(w, http.StatusInternalServerError, handlers.ServerError, err.Error(), nil)
+		return
+	}
+
+	if tx == nil {
+		handlers.GeneralResponse(w, http.StatusNotFound, handlers.DataNotFound, "not found", nil)
 		return
 	}
 

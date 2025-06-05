@@ -17,9 +17,9 @@ export const MENU_ITEMS = [
 		),
 	},
 	{
-		key: "master-data-siswa",
-		label: "Master Data Siswa",
-		path: "/master-data-siswa",
+		key: "list_consumers",
+		label: "Consumers",
+		path: "/list_consumers",
 		icon: (pathname) => (
 			<svg 
 			className={`shrink-0 fill-current ${pathname.includes("master-data-siswa") ? "text-violet-500" : "text-gray-400 dark:text-gray-500"}`}
